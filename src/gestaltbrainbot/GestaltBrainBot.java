@@ -346,4 +346,4 @@ class TurnM extends M {
     private void takeAction() {
         toNotify.addG(new G("turnL"));
     }
-}
+} 
