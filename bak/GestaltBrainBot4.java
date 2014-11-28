@@ -1,4 +1,4 @@
-x/*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -22,7 +22,6 @@ public class GestaltBrainBot {
     public static void main(String[] args) {
         // TODO code application logic here
     }
-
     
 }
 
@@ -38,21 +37,30 @@ class GB { //notifiable
         this.gs = gestalts;
     }
     
+//    GB(GB g) {
+//        this.gs = g.gs;
+//    }
     
     void addG(G g) {
-        gs.add(g);
+        addGToColl(gs,g);
     }    
     
-    void addG(G s,Link l,G t) {
-        l.t=t;
-        s.addL(l);
-        addG(s);
-        addG(t);
+    private void addGToColl(Collection c, G g) {
+        c.add(g);
     }
     
-    void addAllG(Collection<? extends G> i) {
-        gs.addAll(i);
+    void addG(G s,Link l,G t) {
+        addGToColl(gs,s,l,t);
     }
+    
+    private void addGToColl(Collection c, G s,Link l,G t) {
+        l.t=t;
+        s.addL(l);
+        addGToColl(c,s);
+        addGToColl(c,t);
+    }
+    
+    
 //    void addKnowl(String s,String l,String  t) {
 //        G sg=new G(s,3);
 //        Link ll=new Link(l);
@@ -63,26 +71,21 @@ class GB { //notifiable
 //        addGToColl(gs,sg,ll,tg);
 //    }
 //    
-//    void takeAction() { //next
-//        
-//    }
     
     public GB openGs() {
         ArrayList<G> o = new ArrayList<G>();
         for (G g:gs) {
-            if (g.isOpen())
+            if (g.sts < 3)
                 o.add(g);
         }
         return new GB(o);
     }
 }
 
-class G extends GB {
+class G {
     String msg;
-    ArrayList<Link> gs=new ArrayList<Link>();
-    ArrayList<Link> links=gs;
-//    LinkedHashSet<Link> links=new LinkedHashSet<Link>();
-    private int sts=0; //0: not ack; 1: ack; 2: in prog: 3:done
+    LinkedHashSet<Link> links=new LinkedHashSet<Link>();
+    int sts=0; //0: not ack; 1: ack; 2: in prog: 3:done
     
     G() {
     }
@@ -97,41 +100,25 @@ class G extends GB {
     }
     
     void addL(Link l) {
-        addG(l);
+        links.add(l);
     }
     
     void addAllL(Collection<? extends Link> ls) {
-        addAllG(ls);
+        links.addAll(ls);
     }
     
     void addL(String r, G t) {
         addL(new Link(r,t));
     }
-   
-
-    /**
-     * @return the sts
-     */
-    public int getSts() {
-        return sts;
+    
+    boolean equals(G g2){
+        return this.msg.equals(g2.msg);
     }
-
-    /**
-     * @param sts the sts to set
-     */
-    public void setSts(int sts) {
-        this.sts = sts;
-    }
-
-    boolean isOpen() {
-        return getSts()<3;
-    }
-   
 }
 
 class Link extends G {
     double strength=1;
-    GB t; 
+    G t; 
     
     Link() {
         this(null,null);
@@ -154,10 +141,6 @@ class Link extends G {
         this.strength=s;
         this.t=t;
     }  
-    
-     boolean isOpen() {
-        return t.getSts()<3;
-    }
 }
 
 class Entity extends GB {
@@ -242,10 +225,8 @@ class B extends Entity {
                     g.addAllL(l.t.links);
                 }
                 else if(l.msg.equals("respBy")) {
-                    if(g.getSts()==0) {
-                        l.t.setSts(0);
-                        
-                    }
+                    if(g.sts==0)
+                        l.t.sts=0;
                 }
             }
         }
@@ -298,25 +279,6 @@ class TouchS extends S {
     }
 }
 
-class PMCGB extends GB {
-    
-}
-class TurnG extends G {
-    
-}
-
-class TurnSubG extends TurnG {
-    
-}
-
-class TurnLG extends TurnG {
-    
-}
-
-class TurnRG extends TurnG {
-    
-}
-
 class WormB extends B {
     WormB(GB m) {
         super(m);
@@ -325,14 +287,8 @@ class WormB extends B {
         
         LinkedHashSet<G> knowl=new LinkedHashSet<G>();
         
-        GB pmc=new PMCGB();
+        G pmc=new 
         G turnSub=new TurnSubG();
-        G touch=new G("touch",3);
-        touch.addL("respBy", turnSub);
-        
-        turnSub.addL("respBy", toNotify);
-        
-        addKnowl("touch", "respBy", "turnSub");
         
         addKnowl("touch", "respBy", "turnSub");
         addKnowl("turnSub", "respBy", );            
@@ -347,4 +303,4 @@ class TurnM extends M {
     private void takeAction() {
         toNotify.addG(new G("turnL"));
     }
-} 
+}
