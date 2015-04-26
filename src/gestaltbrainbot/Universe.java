@@ -20,29 +20,30 @@ class Universe {
         
         new Wall(300, 0, 2, 200), new Wall(300, 200, 1, 100), new Wall(400, 200, 2, 75),
         new Wall(100, 275, 1, 300),
-        new Wall(300, 0, 2, 500),
+//        new Wall(300, 0, 2, 500),
 //        new Wall(100, 200, 1, 300),
 //        new Wall(100, 250, 1, 300),  //horizontal, right
 //        new Wall(200, 0, 2, 200), new Wall(250, 0, 2, 200) //vertical,down
     };
-//    private GestaltBrainBot s;
+    private GestaltBrainBot s;
     
     int time = 0;
-    UniverseObject[] uOs = new UniverseObject[w.length + 0];
-//    UniverseObject[] uOs = new UniverseObject[w.length + 1];
+//    UniverseObject[] uOs = new UniverseObject[w.length + 0];
+    UniverseObject[] uOs = new UniverseObject[w.length + 1];
 
     //default universe
     public Universe() {
         //w = new HWall(100);
-//#t        s = new GestaltBrainBot(250, 60, 2); //snake goes down at first
+//        s = new GestaltBrainBot(250, 60, 2); //snake goes down at first
 //        uOs[0] = s;
+        uOs[0] =  new Wall(5000, 0, 2, 200);
         for (int i = 0; i < w.length; i++) {
-            uOs[i] = w[i];
+            uOs[i+1] = w[i];
         }
         // if(o instanceof Path)
         Path np = new Path(200, 0, 200, 300, 2);
 //        System.out.print(w[0] + " " + np + " ");
-        System.out.println(w[6].crosses(w[7]));
+//        System.out.println(w[6].crosses(w[7]));
         //System.out.println(w[0].crosses(w[1]));
     }
 
@@ -55,6 +56,10 @@ class Universe {
             dy *= o.v;
             
             int nx = o.x + dx, ny = o.y + dy;
+            
+            
+            
+            
             boolean hitWall = false;
             Path p = new Path(o.x, o.y, nx, ny, o.dir);
             //System.out.println(new Path(200, 0, 200, 400, 2).crosses(new Path(100, 100, 300, 100, 1)));
@@ -65,9 +70,10 @@ class Universe {
                 }
             }
             if (hitWall) {
-//                Gestalt g = new Gestalt("touch");
-//                s.body.addGestalt(g);
-//                System.out.println(g.msg);
+                G g = new TouchG();
+                
+                o.addG(g);
+                System.out.println(g.msg);
             } else {
                 o.y = ny;
                 o.x = nx;
@@ -79,7 +85,7 @@ class Universe {
 //            s.y = 60;
 //            s.dir = 2;
 //            time = 0;
-//            System.out.println("Restart");
+            System.out.println("Restart");
 //            repaint();
         }
     }
@@ -102,8 +108,8 @@ class Universe {
 abstract class UniverseObject {
     int x;
     int y;
-    int dir;
-    int v; //dir is 0 1 2 3 clockwise from top
+    int dir; //dir is 0 1 2 3 clockwise from top
+    int v; 
     Color color;
 
     public abstract void next();

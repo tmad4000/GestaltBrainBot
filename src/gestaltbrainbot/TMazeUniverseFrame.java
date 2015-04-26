@@ -20,12 +20,12 @@ import javax.swing.*;
  *
  * @author Jacob-MTech
  */
-public class TMazeWorldFrame extends JFrame {
+public class TMazeUniverseFrame extends JFrame {
 
     MainPanel mP;
     
-    public TMazeWorldFrame() throws InterruptedException {
-        super("TMazeWorld");
+    public TMazeUniverseFrame() throws InterruptedException {
+        super("TMazeUniverse");
         setSize(600, 500);
         mP = new MainPanel();
         add(mP);
@@ -46,7 +46,7 @@ public class TMazeWorldFrame extends JFrame {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws InterruptedException {
-        TMazeWorldFrame s = new TMazeWorldFrame();
+        TMazeUniverseFrame s = new TMazeUniverseFrame();
 
         // TODO code application logic here
     }

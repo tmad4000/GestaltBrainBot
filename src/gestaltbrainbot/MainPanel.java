@@ -16,15 +16,15 @@ import javax.swing.JPanel;
 class MainPanel extends JPanel {
     Universe u;
 //    GestaltPanel gP;
-    UniversePanel sP;
+    UniversePanel uP;
 
     public MainPanel() {
         //setBackground(Color.green);
         //this.setPreferredSize(new Dimension(500, 500));
         u = new Universe();
         //
-        sP = new UniversePanel(u);
-        //add(sP);
+        uP = new UniversePanel(u);
+        //add(uP);
         ////            jp.add(new JButton("aoeu"));
         //
         ////            add(jp)
@@ -34,7 +34,7 @@ class MainPanel extends JPanel {
         //
         setLayout(new BorderLayout());
         //
-        add(sP, BorderLayout.CENTER);
+        add(uP, BorderLayout.CENTER);
 //        add(gP, BorderLayout.EAST);
     }
 
@@ -42,7 +42,7 @@ class MainPanel extends JPanel {
     //            g.drawLine(100, 111, 200, 222);
     //        }
     public void next() {
-        sP.next();
+        uP.next();
 //        gP.next();
     }
     
