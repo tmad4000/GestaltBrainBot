@@ -3,80 +3,85 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gestaltbrainbot;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.Line2D;
 
 /**
  *
  * @author Jacob-MTech
  */
 class Universe {
+
     //HWall w;
-    private Wall[] w = {
+
+    private Wall[] walls = {
         new Wall(200, 0, 2, 200), new Wall(200, 200, 3, 100), new Wall(100, 200, 2, 75),
-        
         new Wall(300, 0, 2, 200), new Wall(300, 200, 1, 100), new Wall(400, 200, 2, 75),
-        new Wall(100, 275, 1, 300),
-//        new Wall(300, 0, 2, 500),
-//        new Wall(100, 200, 1, 300),
-//        new Wall(100, 250, 1, 300),  //horizontal, right
-//        new Wall(200, 0, 2, 200), new Wall(250, 0, 2, 200) //vertical,down
+        new Wall(100, 275, 1, 300), //        new Wall(300, 0, 2, 500),
+    //        new Wall(100, 200, 1, 300),
+    //        new Wall(100, 250, 1, 300),  //horizontal, right
+    //        new Wall(200, 0, 2, 200), new Wall(250, 0, 2, 200) //vertical,down
     };
-    private GestaltBrainBot s;
-    
+    private Worm s;
+
     int time = 0;
 //    UniverseObject[] uOs = new UniverseObject[w.length + 0];
-    UniverseObject[] uOs = new UniverseObject[w.length + 1];
+    UniverseObject[] uOs = new UniverseObject[walls.length + 1];
 
     //default universe
     public Universe() {
         //w = new HWall(100);
-//        s = new GestaltBrainBot(250, 60, 2); //snake goes down at first
-//        uOs[0] = s;
-        uOs[0] =  new Wall(5000, 0, 2, 200);
-        for (int i = 0; i < w.length; i++) {
-            uOs[i+1] = w[i];
+        s = new Worm(250, 60, 2); //snake goes down at first
+        uOs[0] = s;
+//        uOs[0] =  new Wall(5000, 0, 2, 200);
+        for (int i = 0; i < walls.length; i++) {
+            uOs[i + 1] = walls[i];
         }
         // if(o instanceof Path)
         Path np = new Path(200, 0, 200, 300, 2);
 //        System.out.print(w[0] + " " + np + " ");
-//        System.out.println(w[6].crosses(w[7]));
+//        System.out.println(w[5].crosses(w[6]));
         //System.out.println(w[0].crosses(w[1]));
     }
 
-    void next() {
-    
+    void next() throws InterruptedException {
+        Thread.sleep(20);
         for (UniverseObject o : uOs) {
-            o.next();
-            int dx = o.dirXY()[0], dy = o.dirXY()[1];
-            dx *= o.v;
-            dy *= o.v;
-            
-            int nx = o.x + dx, ny = o.y + dy;
-            
-            
-            
-            
-            boolean hitWall = false;
-            Path p = new Path(o.x, o.y, nx, ny, o.dir);
-            //System.out.println(new Path(200, 0, 200, 400, 2).crosses(new Path(100, 100, 300, 100, 1)));
-            for (Wall currW : w) {
-                //                     System.out.println(new Path(200, 0, 200, 400, 2).crosses(currW));
-                if (p.crosses(currW)) {
-                    hitWall = true;
-                }
-            }
-            if (hitWall) {
-                G g = new TouchG();
+            if (o instanceof Worm) {
+                o.next();
+                int dx = o.dirXY()[0], dy = o.dirXY()[1];
+                dx *= o.v;
+                dy *= o.v;
+
+                int nx = o.x + dx, ny = o.y + dy;
+
+                boolean hitWall = false;
+                Path p = new Path(o.x, o.y, nx, ny, o.dir);
+
                 
-                o.addG(g);
-                System.out.println(g.msg);
-            } else {
-                o.y = ny;
-                o.x = nx;
+
+                //System.out.println("testpath " + new Path(200, 0, 200, 400, 2).crosses(new Path(100, 100, 300, 100, 1)));
+                for (Wall wall : walls) {
+                    //                     System.out.println(new Path(200, 0, 200, 400, 2).crosses(currW));
+                    if (p.crosses(wall)) {
+                        hitWall = true;
+                        break;
+                    }
+                }
+
+                if (hitWall) {
+//                G g = new TouchG();
+//                
+//                o.addG(g);
+//                System.out.println(g.msg);
+                    System.out.println("Snake hit a wall");
+                } else {
+                    o.y = ny;
+                    o.x = nx;
+                }
             }
         }
         time++;
@@ -92,24 +97,24 @@ class Universe {
 
     public void paintComponent(Graphics g) {
         for (UniverseObject uO : uOs) {
-            if(uO!=null)
+            if (uO != null) {
                 uO.paintComponent(g);
+            }
         }
     }
-    
+
 }
-
-
 
 /**
  *
  * @author Jacob-MTech
  */
 abstract class UniverseObject {
+
     int x;
     int y;
     int dir; //dir is 0 1 2 3 clockwise from top
-    int v; 
+    int v;
     Color color;
 
     public abstract void next();
@@ -130,9 +135,9 @@ abstract class UniverseObject {
                 throw new RuntimeException("EXCEPTION: dir is not 0 to 3");
         }
     }
-    
+
     /**
-     * 
+     *
      * @return 0-3 starting up going clocksiwse
      */
     public int[] dirXY() {
@@ -160,7 +165,7 @@ abstract class UniverseObject {
         int[] o = {dx, dy};
         return o;
     }
-    
+
 }
 
 /**
@@ -168,7 +173,9 @@ abstract class UniverseObject {
  * @author Jacob-MTech
  */
 class Path extends UniverseObject {
+
     //not really "UniverseObject" just want the methods
+
     int x2;
     int y2;
 
@@ -187,47 +194,49 @@ class Path extends UniverseObject {
     }
 
     public boolean crosses(Path w) {
-        //assuming rectilinear now
-        //System.out.println("dir" + Arrays.toString(dirXY())+Arrays.toString(w.dirXY()));
-        if (dirXY()[0] != 0) {
-            //this is horiz path
-            if (w.dirXY()[1] != 0) {
-                if (w.x >= Math.min(this.x, this.x2) && w.x <= Math.max(this.x, this.x2)) {
-                    if (this.y >= Math.min(w.y, w.y2) && this.y <= Math.max(w.y, w.y2)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else if (dirXY()[1] != 0) {
-            //this is vert path
-            if (w.dirXY()[0] != 0) {
-                if (w.y >= Math.min(this.y, this.y2) && w.y <= Math.max(this.y, this.y2)) {
-                    if (this.x >= Math.min(w.x, w.x2) && this.x <= Math.max(w.x, w.x2)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        return true;
-        //           else {
-        //                throw new RuntimeException("Wall not rectilinear");
-        //            }
-        // old:
-        //y=m1 x + b1
-        // y=m2 x + b2
-        // -(b1-b2)/(m1-m2) = x
+        return Line2D.linesIntersect(x, y, x2, y2, w.x, w.y, w.x2, w.y2);
+//        
+//        //assuming rectilinear now
+//        //System.out.println("dir" + Arrays.toString(dirXY())+Arrays.toString(w.dirXY()));
+//        if (dirXY()[0] != 0) {
+//            //this is horiz path
+//            if (w.dirXY()[1] != 0) {
+//                if (w.x >= Math.min(this.x, this.x2) && w.x <= Math.max(this.x, this.x2)) {
+//                    if (this.y >= Math.min(w.y, w.y2) && this.y <= Math.max(w.y, w.y2)) {
+//                        return true;
+//                    } else {
+//                        return false;
+//                    }
+//                } else {
+//                    return false;
+//                }
+//            } else {
+//                return false;
+//            }
+//        } else if (dirXY()[1] != 0) {
+//            //this is vert path
+//            if (w.dirXY()[0] != 0) {
+//                if (w.y >= Math.min(this.y, this.y2) && w.y <= Math.max(this.y, this.y2)) {
+//                    if (this.x >= Math.min(w.x, w.x2) && this.x <= Math.max(w.x, w.x2)) {
+//                        return true;
+//                    } else {
+//                        return false;
+//                    }
+//                } else {
+//                    return false;
+//                }
+//            } else {
+//                return false;
+//            }
+//        }
+//        return true;
+//        //           else {
+//        //                throw new RuntimeException("Wall not rectilinear");
+//        //            }
+//        // old:
+//        //y=m1 x + b1
+//        // y=m2 x + b2
+//        // -(b1-b2)/(m1-m2) = x
     }
 
     public void paintComponent(Graphics g) {
@@ -238,16 +247,15 @@ class Path extends UniverseObject {
     public String toString() {
         return "((" + x + "," + y + "),(" + x2 + "," + y2 + "))";
     }
-    
+
 }
-
-
 
 /**
  *
  * @author Jacob-MTech
  */
 class Wall extends Path {
+
     int len;
 
     public Wall(int x, int y, int dir, int len) {
@@ -257,5 +265,5 @@ class Wall extends Path {
         this.y2 = y + dirXY()[1] * len;
         this.color = Color.BLACK;
     }
-    
+
 }
