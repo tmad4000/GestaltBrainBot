@@ -51,6 +51,8 @@ class Universe {
         Thread.sleep(20);
         for (UniverseObject o : uOs) {
             if (o instanceof Worm) {
+                Worm wormCast = (Worm)o;
+                
                 o.next();
                 int dx = o.dirXY()[0], dy = o.dirXY()[1];
                 dx *= o.v;
@@ -73,10 +75,8 @@ class Universe {
                 }
 
                 if (hitWall) {
-//                G g = new TouchG();
-//                
-//                o.addG(g);
-//                System.out.println(g.msg);
+                
+                    wormCast.addGestalt(new Gestalt("touchG", true));
                     System.out.println("Snake hit a wall");
                 } else {
                     o.y = ny;
@@ -90,7 +90,7 @@ class Universe {
 //            s.y = 60;
 //            s.dir = 2;
 //            time = 0;
-            System.out.println("Restart");
+//            System.out.println("Restart");
 //            repaint();
         }
     }

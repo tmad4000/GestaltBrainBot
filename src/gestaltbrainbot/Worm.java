@@ -35,19 +35,29 @@ public class Worm extends UniverseObject {
         Gestalt moveForwardG1 = new Gestalt("moveForwardG");
         lowBloodSugarG1.addConnection(moveForwardG1);
         
-//
 //        SensoryNeuron lowBloodSugarS = new SensoryNeuron("lowBloodSugarS");
 //        addConnection(lowBloodSugarS, hungerG1);
-
-        
 
         MoveForwardM moveForwardM = new MoveForwardM("moveForwardM", this);
         
         moveForwardG1.addConnection(moveForwardM);
         
+        
+        Gestalt touchG1 = new Gestalt("touchG");
+        Gestalt turnRightG1 = new Gestalt("turnRightG");
+        touchG1.addConnection(turnRightG1);
+        
+        TurnRightM turnRightM = new TurnRightM("turnRightM", this);
+        turnRightG1.addConnection(turnRightM);
+        
         myGestalts.add(lowBloodSugarG1);
         myGestalts.add(moveForwardG1);
-        myGestalts.add(moveForwardM);
+        myGestalts.add(moveForwardM);      
+        
+        myGestalts.add(touchG1);
+        myGestalts.add(turnRightG1);
+        myGestalts.add(turnRightM);
+        
         
     }
 
@@ -71,8 +81,13 @@ public class Worm extends UniverseObject {
         }
     }
 
+    public void addGestalt(Gestalt g){
+        myGestalts.add(g);
+    }
+            
     public void next() {
         System.out.println(this);
+        System.out.println(myGestalts.get(0));
         
         for (Gestalt g : myGestalts) {
             System.out.print(g + ", ");
@@ -82,7 +97,7 @@ public class Worm extends UniverseObject {
         bloodSugar--;
         
         if (bloodSugar < LOW_BLOOD_SUGAR_LEVEL) {
-            myGestalts.add(new Gestalt("lowBloodSugarG", true));
+            addGestalt(new Gestalt("lowBloodSugarG", true));
         }
 
         matchOpenGsToAllOtherGs();
@@ -125,6 +140,11 @@ class Gestalt {
     void open() {
         open = true;
     }
+    void close() {
+        open = false;
+    }
+    
+    
 
     void addConnection(Gestalt n2) {
         connections.add(n2);
@@ -178,11 +198,37 @@ class Gestalt {
 //    }
 //}
 
-class MoveForwardM extends Gestalt {
+abstract class Motor extends Gestalt{
     Worm toControl;
-    public MoveForwardM(String label, Worm toControl) {
+    public Motor(String label, Worm toControl) {
         super(label);
         this.toControl =  toControl;
+    }
+    
+    
+}
+
+class TurnRightM extends Motor {
+    
+    public TurnRightM(String label, Worm toControl) {
+        super(label,toControl);
+    }
+    
+    void propagateActivation() {
+       
+        
+        if (this.isOpen()) {
+              toControl.dir = (toControl.dir + 1)%4 ;
+        }
+        super.propagateActivation();
+
+    }
+}
+
+class MoveForwardM extends Motor {
+    
+    public MoveForwardM(String label, Worm toControl) {
+        super(label,toControl);
     }
     
     void propagateActivation() {
@@ -190,6 +236,6 @@ class MoveForwardM extends Gestalt {
         if (this.isOpen()) {
             toControl.v = 3;
         }
+        super.propagateActivation();
     }
 }
-
