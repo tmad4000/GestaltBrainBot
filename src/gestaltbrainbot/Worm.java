@@ -16,46 +16,41 @@ import java.util.*;
 
 public class Worm extends UniverseObject {
 
+
+    int bloodSugar = 1030;
+    final int LOW_BLOOD_SUGAR_LEVEL = 1000;
+    boolean touchPressed=false;
+
+    
+    Gestalt bloodSugarS;
+    Gestalt touchS;
+    
+    MoveForwardM moveForwardM;
+    TurnRightM turnRightM;
+
     ArrayList<Gestalt> myGestalts = new ArrayList<>();
 
-    int bloodSugar = 33;
-    final int LOW_BLOOD_SUGAR_LEVEL = 30;
-
-
+    
     public Worm(int x, int y, int dir) {
 
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.v = 0;
-        
         this.color = Color.RED;
-    
-        Gestalt lowBloodSugarG1 = new Gestalt("lowBloodSugarG");
-        Gestalt moveForwardG1 = new Gestalt("moveForwardG");
-        lowBloodSugarG1.addConnection(moveForwardG1);
-        
-//        SensoryNeuron lowBloodSugarS = new SensoryNeuron("lowBloodSugarS");
-//        addConnection(lowBloodSugarS, hungerG1);
 
-        MoveForwardM moveForwardM = new MoveForwardM("moveForwardM", this);
+
+        moveForwardM = new MoveForwardM("moveForwardM",this);
+        bloodSugarS = new Gestalt("bloodSugarS",moveForwardM);
         
-        moveForwardG1.addConnection(moveForwardM);
+        turnRightM = new TurnRightM("turnRightM",this);
+        touchS = new Gestalt("touchS",turnRightM);
         
         
-        Gestalt touchG1 = new Gestalt("touchG");
-        Gestalt turnRightG1 = new Gestalt("turnRightG");
-        touchG1.addConnection(turnRightG1);
-        
-        TurnRightM turnRightM = new TurnRightM("turnRightM", this);
-        turnRightG1.addConnection(turnRightM);
-        
-        myGestalts.add(lowBloodSugarG1);
-        myGestalts.add(moveForwardG1);
-        myGestalts.add(moveForwardM);      
-        
-        myGestalts.add(touchG1);
-        myGestalts.add(turnRightG1);
+        myGestalts.add(bloodSugarS);
+        myGestalts.add(moveForwardM);  
+
+        myGestalts.add(touchS);
         myGestalts.add(turnRightM);
         
         
@@ -80,41 +75,71 @@ public class Worm extends UniverseObject {
             }
         }
     }
+    
+    private void inheritConnections() {
+    	for (Gestalt og : getOpenGs()) {
+            for (Gestalt g : myGestalts) {
+                if (og.equals(g)) {
+                    g.addBiConnection(og);
+                }
+            }
+        }
+	}
 
     public void addGestalt(Gestalt g){
         myGestalts.add(g);
     }
+    
+    public void touch() {
+    	touchPressed=true;
+    }
             
     public void next() {
-        System.out.println(this);
-        System.out.println(myGestalts.get(0));
-        
-        for (Gestalt g : myGestalts) {
-            System.out.print(g + ", ");
-        }
-        System.out.println(" ");
-        
-        bloodSugar--;
-        
-        if (bloodSugar < LOW_BLOOD_SUGAR_LEVEL) {
-            addGestalt(new Gestalt("lowBloodSugarG", true));
-        }
-
-        matchOpenGsToAllOtherGs();
         
         for (Gestalt g : myGestalts) {
             g.propagateActivation();
         }
+        
+        
+        if (bloodSugar < LOW_BLOOD_SUGAR_LEVEL) {
+            bloodSugarS.open();
+        } else {
+            bloodSugarS.close();
+        }
+        	
+        
+        if (touchPressed) {
+        	touchS.open();
+        }
+        
+        System.out.println(this);
+        printGestalts();
+        
 
+//        matchOpenGsToAllOtherGs();
+//        inheritConnections();
+
+        
+        
+        bloodSugar--;
+        touchPressed=false;
+        
     }
-    
-    @Override
+
+	@Override
     public void paintComponent(Graphics g) {
         g.setColor(this.color);
         g.fillOval(x-5, y-5, 10, 10);
         g.drawLine(x, y, (5 + v)*dirXY()[0]+x, (5+v)*dirXY()[1]+y);
     }
     
+	public void printGestalts() {
+		  for (Gestalt g : myGestalts) {
+	            System.out.print(g + ", ");
+	        }
+	        System.out.println(" ");
+	}
+	
     public String toString() {
     
         return "(" + x + ", " +  y + ") " + v + " bloodsugar:" + bloodSugar;
@@ -122,65 +147,23 @@ public class Worm extends UniverseObject {
     }
 }
 
-class Gestalt {
 
-    String label;
-    ArrayList<Gestalt> connections = new ArrayList<>();
-    boolean open;
+class TouchG extends Gestalt { 
 
-    Gestalt(String label) {
-        this.label = label;
-    }
-    
-    Gestalt(String label, boolean open) {
-        this.label = label;
-        this.open  = open;
-    }
+	public TouchG() {
+		super("touchG");
+	}
+	
+	public TouchG(boolean open) {
 
-    void open() {
-        open = true;
-    }
-    void close() {
-        open = false;
-    }
-    
-    
-
-    void addConnection(Gestalt n2) {
-        connections.add(n2);
-    }
-    
-    void addBiConnection(Gestalt n2) {
-        connections.add(n2);
-        n2.addConnection(this);
-    }
-
-    private void openConnected() {
-        for (Gestalt n : connections) {
-            n.open();
-//            System.out.print(n);
-//            System.out.println("opened");
-        }
-    }
-
-    void propagateActivation() {
-
-        if (this.isOpen()) {
-            openConnected();
-        }
-    }
-
-    boolean equals(Gestalt n2) {
-        return this.label.equals(n2.label);
-    }
-
-    boolean isOpen() {
-        return open;
-    }
-    
-    public String toString() {
-        return label + " " + (open?"open":"closed");
-    }   
+		super("touchG",open);
+		
+	}
+	
+    public void endTurn() {
+		this.open=false;
+		
+	}
 }
 //
 //class LowBloodSugarG extends Gestalt {
@@ -197,9 +180,82 @@ class Gestalt {
 //        super(label);
 //    }
 //}
+//
+//abstract class Sensor extends Gestalt {
+//    Gestalt toNotify;
+//    public Sensor(String label, GestaltBox toNotify) {
+//        super(label);
+//        this.toControl =  toControl;
+//    }
+//    
+//    
+//}
+//
+//class TouchS extends Sensor {
+//    
+//	public void touch(){
+//		addGestalt(new Gestalt("touch",true));
+//	}
+//	void next(){
+//		
+//	}
+//	
+//    public TurnRightM(String label, GestaltBox toNotify) {
+//        super(label,toControl);
+//    }
+//    
+//    void propagateActivation() {
+//       
+//        
+//        if (this.isOpen()) {
+//              toControl.dir = (toControl.dir + 1)%4 ;
+//        }
+//        super.propagateActivation();
+//
+//    }
+//}
 
-abstract class Motor extends Gestalt{
+
+//class Entity extends GestaltBox {
+//	String label;
+//	
+//	
+//}
+//
+
+//class TouchS extends Entity {
+//	
+//	public TouchS()
+//	 Gestalt lowBloodSugarG1 = new Gestalt("lowBloodSugarG");
+//     Gestalt moveForwardG1 = new Gestalt("moveForwardG");
+//     lowBloodSugarG1.addConnection(moveForwardG1);
+//     
+////     SensoryNeuron lowBloodSugarS = new SensoryNeuron("lowBloodSugarS");
+////     addConnection(lowBloodSugarS, hungerG1);
+//
+//     MoveForwardM moveForwardM = new MoveForwardM("moveForwardM", this);
+//     
+//     moveForwardG1.addConnection(moveForwardM);
+//     
+//     
+//     Gestalt touchG1 = new TouchG();
+//     Gestalt turnRightG1 = new Gestalt("turnRightG");
+//     touchG1.addConnection(turnRightG1);
+//     
+//     TurnRightM turnRightM = new TurnRightM("turnRightM", this);
+//     turnRightG1.addConnection(turnRightM);
+//     
+//     myGestalts.add(lowBloodSugarG1);
+//     myGestalts.add(moveForwardG1);
+//     myGestalts.add(moveForwardM);      
+//     
+//	
+//}
+
+
+abstract class Motor extends Gestalt {
     Worm toControl;
+    
     public Motor(String label, Worm toControl) {
         super(label);
         this.toControl =  toControl;
@@ -210,25 +266,23 @@ abstract class Motor extends Gestalt{
 
 class TurnRightM extends Motor {
     
-    public TurnRightM(String label, Worm toControl) {
-        super(label,toControl);
+	public TurnRightM(String label, Worm toControl) {
+        super(label, toControl);
     }
     
     void propagateActivation() {
-       
-        
+
         if (this.isOpen()) {
               toControl.dir = (toControl.dir + 1)%4 ;
         }
         super.propagateActivation();
-
     }
 }
 
 class MoveForwardM extends Motor {
     
     public MoveForwardM(String label, Worm toControl) {
-        super(label,toControl);
+        super(label, toControl);
     }
     
     void propagateActivation() {

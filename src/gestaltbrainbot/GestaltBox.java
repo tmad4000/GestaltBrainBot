@@ -1,3 +1,99 @@
+package gestaltbrainbot;
+
+import java.util.*;
+
+
+//class GestaltBox {
+//    ArrayList<Gestalt> myGestalts = new ArrayList<>();
+//
+//    public void addGestalt(Gestalt g){
+//        myGestalts.add(g);
+//    }
+//    
+//    ArrayList<Gestalt> getOpenGs() {
+//        ArrayList<Gestalt> openGs = new ArrayList<>();
+//        for (Gestalt g : myGestalts) {
+//            if (g.isOpen()) {
+//                openGs.add(g);
+//            }
+//        }
+//        return openGs;
+//    }
+//
+//}
+
+
+
+class Gestalt {
+
+    String label;
+    ArrayList<Gestalt> connections = new ArrayList<>();
+    boolean open;
+
+    
+    Gestalt(String label, Gestalt... connections) {
+    	this(label);
+    	this.connections=new ArrayList<Gestalt>(Arrays.asList(connections));
+    }
+
+    Gestalt(String label) {
+        this(label,false);
+    }
+
+	Gestalt(String label, boolean open) {
+        this.label = label;
+        this.open  = open;
+    }
+    
+    public void endTurn() {
+		// TODO Auto-generated method stub
+		
+	}
+    
+    void open() {
+        open = true;// TODO Auto-generated method stub
+    }
+    
+    void close() {
+        open = false;
+    }
+    
+
+    void addConnection(Gestalt n2) {
+        connections.add(n2);
+    }
+    
+    void addBiConnection(Gestalt n2) {
+        connections.add(n2);
+        n2.addConnection(this);
+    }
+
+    private void openConnected() {
+        for (Gestalt n : connections) {
+            n.open();
+//            System.out.print(n);
+//            System.out.println("opened");
+        }
+    }
+
+    void propagateActivation() {
+        if (this.isOpen()) {
+            openConnected();
+        }
+    }
+
+    boolean equals(Gestalt n2) {
+        return this.label.equals(n2.label);
+    }
+
+    boolean isOpen() {
+        return open;
+    }
+    
+    public String toString() {
+        return label + " " + (open?"open":"closed");
+    }   
+}
 ///*
 // * To change this license header, choose License Headers in Project Properties.
 // * To change this template file, choose Tools | Templates

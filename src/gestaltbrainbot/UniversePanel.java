@@ -36,7 +36,7 @@ class UniversePanel extends JPanel {
         u.paintComponent(g);
     }
 
-    public void next() {
+    public void next() throws InterruptedException {
         u.next();
         repaint();
     }

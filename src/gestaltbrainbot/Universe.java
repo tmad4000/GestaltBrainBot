@@ -53,7 +53,7 @@ class Universe {
             if (o instanceof Worm) {
                 Worm wormCast = (Worm)o;
                 
-                o.next();
+                
                 int dx = o.dirXY()[0], dy = o.dirXY()[1];
                 dx *= o.v;
                 dy *= o.v;
@@ -76,12 +76,13 @@ class Universe {
 
                 if (hitWall) {
                 
-                    wormCast.addGestalt(new Gestalt("touchG", true));
+                    wormCast.touch();
                     System.out.println("Snake hit a wall");
                 } else {
                     o.y = ny;
                     o.x = nx;
                 }
+                o.next();
             }
         }
         time++;
