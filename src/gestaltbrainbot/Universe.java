@@ -48,7 +48,7 @@ class Universe {
     }
 
     void next() throws InterruptedException {
-        Thread.sleep(20);
+        Thread.sleep(30);
         for (UniverseObject o : uOs) {
             if (o instanceof Worm) {
                 Worm wormCast = (Worm)o;
@@ -97,6 +97,7 @@ class Universe {
     }
 
     public void paintComponent(Graphics g) {
+        
         for (UniverseObject uO : uOs) {
             if (uO != null) {
                 uO.paintComponent(g);
