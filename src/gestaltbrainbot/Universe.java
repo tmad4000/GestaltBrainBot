@@ -18,9 +18,9 @@ class Universe {
     //HWall w;
 
     private Wall[] walls = {
-        new Wall(200, 0, 2, 200), new Wall(200, 200, 3, 100), new Wall(100, 200, 2, 75),
-        new Wall(300, 0, 2, 200), new Wall(300, 200, 1, 100), new Wall(400, 200, 2, 75),
-        new Wall(100, 275, 1, 300), //        new Wall(300, 0, 2, 500),
+        new Wall(200, 0, 90, 200), new Wall(200, 200, 180, 100), new Wall(100, 200, 90, 75),
+        new Wall(300, 0, 90, 200), new Wall(300, 200, 0, 100), new Wall(400, 200, 90, 75),
+        new Wall(100, 275, 0, 300), //        new Wall(300, 0, 2, 500),
     //        new Wall(100, 200, 1, 300),
     //        new Wall(100, 250, 1, 300),  //horizontal, right
     //        new Wall(200, 0, 2, 200), new Wall(250, 0, 2, 200) //vertical,down
@@ -34,14 +34,14 @@ class Universe {
     //default universe
     public Universe() {
         //w = new HWall(100);
-        s = new Worm(250, 60, 2); //snake goes down at first
+        s = new Worm(250, 60, 90); //snake goes down at first
         uOs[0] = s;
 //        uOs[0] =  new Wall(5000, 0, 2, 200);
         for (int i = 0; i < walls.length; i++) {
             uOs[i + 1] = walls[i];
         }
         // if(o instanceof Path)
-        Path np = new Path(200, 0, 200, 300, 2);
+//        Path np = new Path(200, 0, 200, 300, 2);
 //        System.out.print(w[0] + " " + np + " ");
 //        System.out.println(w[5].crosses(w[6]));
         //System.out.println(w[0].crosses(w[1]));
@@ -52,13 +52,13 @@ class Universe {
         for (UniverseObject o : uOs) {
             if (o instanceof Worm) {
                 Worm wormCast = (Worm)o;
+                o.next();
                 
-                
-                int dx = o.dirXY()[0], dy = o.dirXY()[1];
+                double dx = o.dirXY()[0], dy = o.dirXY()[1];
                 dx *= o.v;
                 dy *= o.v;
 
-                int nx = o.x + dx, ny = o.y + dy;
+                double nx = o.x + dx, ny = o.y + dy;
 
                 boolean hitWall = false;
                 Path p = new Path(o.x, o.y, nx, ny, o.dir);
@@ -82,7 +82,7 @@ class Universe {
                     o.y = ny;
                     o.x = nx;
                 }
-                o.next();
+                
             }
         }
         time++;
@@ -112,10 +112,10 @@ class Universe {
  */
 abstract class UniverseObject {
 
-    int x;
-    int y;
-    int dir; //dir is 0 1 2 3 clockwise from top
-    int v;
+    double  x;
+    double  y;
+    double  dir; //dir is 0 1 2 3 clockwise from top
+    double v;
     Color color;
 
     public abstract void next();
@@ -126,14 +126,14 @@ abstract class UniverseObject {
         switch (dir) {
             case 0:
                 return "UP";
-            case 1:
+            case 90:
                 return "RIGHT";
-            case 2:
+            case 180:
                 return "DOWN";
-            case 3:
+            case 270:
                 return "LEFT";
             default:
-                throw new RuntimeException("EXCEPTION: dir is not 0 to 3");
+                 return String.valueOf(dir); //throw new RuntimeException("EXCEPTION: dir is not 0 to 3");
         }
     }
 
@@ -141,29 +141,8 @@ abstract class UniverseObject {
      *
      * @return 0-3 starting up going clocksiwse
      */
-    public int[] dirXY() {
-        int dx = 0, dy = 0;
-        switch (dir) {
-            case 0:
-                dx = 0;
-                dy = -1;
-                break;
-            case 1:
-                dx = 1;
-                dy = 0;
-                break;
-            case 2:
-                dx = 0;
-                dy = 1;
-                break;
-            case 3:
-                dx = -1;
-                dy = 0;
-                break;
-            default:
-                throw new RuntimeException("Dir not 0 to 3");
-        }
-        int[] o = {dx, dy};
+    public double[] dirXY() {
+        double[] o = {Math.cos(dir*2*Math.PI/360),Math.sin(dir*2*Math.PI/360)};
         return o;
     }
 
@@ -177,10 +156,10 @@ class Path extends UniverseObject {
 
     //not really "UniverseObject" just want the methods
 
-    int x2;
-    int y2;
+    double  x2;
+    double  y2;
 
-    public Path(int x1, int y1, int x2, int y2, int dir) {
+    public Path(double  x1, double  y1, double  x2, double  y2, double  dir) {
         this.x = x1;
         this.y = y1;
         this.x2 = x2;
@@ -242,7 +221,7 @@ class Path extends UniverseObject {
 
     public void paintComponent(Graphics g) {
         g.setColor(this.color);
-        g.drawLine(x, y, x2, y2);
+        g.drawLine((int)x, (int)y, (int)x2, (int)y2);
     }
 
     public String toString() {
@@ -257,9 +236,9 @@ class Path extends UniverseObject {
  */
 class Wall extends Path {
 
-    int len;
+    double  len;
 
-    public Wall(int x, int y, int dir, int len) {
+    public Wall(double  x, double  y, double  dir, double  len) {
         super(x, y, 0, 0, dir); //#hack
         this.len = len;
         this.x2 = x + dirXY()[0] * len;

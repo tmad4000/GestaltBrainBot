@@ -80,6 +80,8 @@ class Gestalt {
         if (this.isOpen()) {
             openConnected();
         }
+        
+        this.close();
     }
 
     boolean equals(Gestalt n2) {

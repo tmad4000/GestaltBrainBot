@@ -31,7 +31,7 @@ public class Worm extends UniverseObject {
     ArrayList<Gestalt> myGestalts = new ArrayList<>();
 
     
-    public Worm(int x, int y, int dir) {
+    public Worm(double x, double y, double dir) {
 
         this.x = x;
         this.y = y;
@@ -129,8 +129,8 @@ public class Worm extends UniverseObject {
 	@Override
     public void paintComponent(Graphics g) {
         g.setColor(this.color);
-        g.fillOval(x-5, y-5, 10, 10);
-        g.drawLine(x, y, (5 + v)*dirXY()[0]+x, (5+v)*dirXY()[1]+y);
+        g.fillOval((int)(x-5), (int)(y-5), 10, 10);
+        g.drawLine((int)x, (int)y, (int)((5 + v)*dirXY()[0]+x), (int)((5+v)*dirXY()[1]+y));
     }
     
 	public void printGestalts() {
@@ -142,7 +142,7 @@ public class Worm extends UniverseObject {
 	
     public String toString() {
     
-        return "(" + x + ", " +  y + ") " + v + " bloodsugar:" + bloodSugar;
+        return String.format("(%.0f,%.0f) v:%.0f dir:%.1f bloodSugar: %d", x,y,v,dir,bloodSugar); //"(" + (int)x + ", " +  (int)y + ") " + v + " " + dir + " bloodsugar:" + bloodSugar;
         
     }
 }
@@ -273,7 +273,7 @@ class TurnRightM extends Motor {
     void propagateActivation() {
 
         if (this.isOpen()) {
-              toControl.dir = (toControl.dir + 1)%4 ;
+              toControl.dir = (toControl.dir + 1)%360 ;
         }
         super.propagateActivation();
     }
