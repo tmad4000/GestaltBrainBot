@@ -3,24 +3,35 @@ package gestaltbrainbot;
 import java.util.*;
 
 
-//class GestaltBox {
-//    ArrayList<Gestalt> myGestalts = new ArrayList<>();
-//
-//    public void addGestalt(Gestalt g){
-//        myGestalts.add(g);
-//    }
-//    
-//    ArrayList<Gestalt> getOpenGs() {
-//        ArrayList<Gestalt> openGs = new ArrayList<>();
-//        for (Gestalt g : myGestalts) {
-//            if (g.isOpen()) {
-//                openGs.add(g);
-//            }
-//        }
-//        return openGs;
-//    }
-//
-//}
+class Agent {
+    ArrayList<Gestalt> myGestalts = new ArrayList<>();
+
+    public void addGestalt(Gestalt g){
+        myGestalts.add(g);
+    }
+    
+    ArrayList<Gestalt> getOpenGs() {
+        ArrayList<Gestalt> openGs = new ArrayList<>();
+        for (Gestalt g : myGestalts) {
+            if (g.isOpen()) {
+                openGs.add(g);
+            }
+        }
+        return openGs;
+    }
+    
+    public String toString() {
+        //Collections.sort(myGestalts);
+        StringBuffer ot = new StringBuffer();
+        for (Gestalt g : myGestalts) {
+            ot.append(g.toString() + "\n");
+            //if(g.sts<4)
+        }
+        System.out.println(myGestalts.size());
+        return ot.toString();
+    }
+
+}
 
 
 
@@ -28,7 +39,9 @@ class Gestalt {
 
     String label;
     ArrayList<Gestalt> connections = new ArrayList<>();
-    boolean open;
+    int status; //0 not ack, 1 ack, 2 in prog, 3 done
+    Agent assignedTo;
+   
 
     
     Gestalt(String label, Gestalt... connections) {
@@ -42,7 +55,7 @@ class Gestalt {
 
 	Gestalt(String label, boolean open) {
         this.label = label;
-        this.open  = open;
+        this.status  = 0;
     }
     
     public void endTurn() {
@@ -51,11 +64,11 @@ class Gestalt {
 	}
     
     void open() {
-        open = true;// TODO Auto-generated method stub
+        status = 0;// TODO Auto-generated method stub
     }
     
     void close() {
-        open = false;
+        status = 3;
     }
     
 
@@ -89,11 +102,11 @@ class Gestalt {
     }
 
     boolean isOpen() {
-        return open;
+        return status<3;
     }
     
     public String toString() {
-        return label + " " + (open?"open":"closed");
+        return label + " " + (status<3?"open":"closed");
     }   
 }
 ///*

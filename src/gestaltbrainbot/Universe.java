@@ -123,20 +123,20 @@ abstract class UniverseObject {
 
     public abstract void paintComponent(Graphics g);
 
-    public String dirName() {
-        switch (dir) {
-            case 0:
-                return "UP";
-            case 90:
-                return "RIGHT";
-            case 180:
-                return "DOWN";
-            case 270:
-                return "LEFT";
-            default:
-                 return String.valueOf(dir); //throw new RuntimeException("EXCEPTION: dir is not 0 to 3");
-        }
-    }
+//    public String dirName() {
+////        switch (dir) {
+////            case 0:
+////                return "UP";
+////            case 90:
+////                return "RIGHT";
+////            case 180:
+////                return "DOWN";
+////            case 270:
+////                return "LEFT";
+////            default:
+////                 return String.valueOf(dir); //throw new RuntimeException("EXCEPTION: dir is not 0 to 3");
+////        }
+//    }
 
     /**
      *

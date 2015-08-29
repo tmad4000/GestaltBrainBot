@@ -159,11 +159,7 @@ class TouchG extends Gestalt {
 		super("touchG",open);
 		
 	}
-	
-    public void endTurn() {
-		this.open=false;
-		
-	}
+
 }
 //
 //class LowBloodSugarG extends Gestalt {
